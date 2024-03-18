@@ -1,3 +1,14 @@
+let hrs = document.getElementById("hours");
+let min = document.getElementById("min");
+let day = document.getElementById("day");
+
+setInterval(()=>{
+    let currentTime = new Date();
+    day.innerHTML = currentTime.toDateString('en-us', {weekday: 'long'});
+    hrs.innerHTML = (currentTime.getHours()<10?"0" : "") + currentTime.getHours();
+    min.innerHTML = (currentTime.getMinutes()<10?"0" : "") + currentTime.getMinutes();
+},1000)
+
 const apiKey = "28d4e9d496374aeb8d388ce182c21ef7";
 const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
 
@@ -7,10 +18,13 @@ const weatherIcon = document.querySelector(".weather-icon");
 
 async function checkWeather(city) {
     const response = await fetch (apiUrl + city + `&appId=${apiKey}`);
-    var data = await response.json();
+    if(response.status == 404) {
+        document.querySelector(".error").style.display = "block";
+        document.querySelector(".middle").style.display = "none";
+    }
 
-    console.log(data);
-
+    else  {
+        var data = await response.json();
     document.querySelector(".city").innerHTML= data.name;
     document.querySelector(".temperature").innerHTML= Math.round(data.main.temp) + "°C";
     document.querySelector(".humidity").innerHTML= data.main.humidity + "%";
@@ -36,10 +50,14 @@ async function checkWeather(city) {
     }
 
     document.querySelector(".middle").style.display = "block";
+    document.querySelector(".error").style.display = "none";
+    }
 
 }
 
 searchbtn.addEventListener("click", ()=>{
     checkWeather(searchBox.value);
 })
+
+
 
